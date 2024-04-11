@@ -1,11 +1,20 @@
 import asyncHandler from "express-async-handler";
 import firebase from "../firebase.js";
 import Movie from "../models/movieModel.js";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    addDoc,
+    getDoc,
+    doc,
+    updateDoc,
+    deleteDoc,
+} from "firebase/firestore";
 
 const db = getFirestore(firebase);
 
-export const addMovie = async (req, res) => {
+export const addMovie = asyncHandler(async (req, res) => {
     try {
         const data = req.body;
         await addDoc(collection(db, "movies"), data);
@@ -13,7 +22,7 @@ export const addMovie = async (req, res) => {
     } catch (error) {
         res.status(400).send(error.message);
     }
-};
+});
 
 export const getMovies = asyncHandler(async (req, res) => {
     const page = parseInt(req.params.page);
@@ -61,5 +70,42 @@ export const getMovies = asyncHandler(async (req, res) => {
     } catch (error) {
         console.error("Error fetching movies:", error);
         res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+export const getMovie = asyncHandler(async (req, res) => {
+    try {
+        const id = req.params.id;
+        const movie = doc(db, "movies", id);
+        const data = await getDoc(movie);
+        if (data.exists()) {
+            res.status(200).send(data.data());
+        } else {
+            res.status(404).send("movie not found");
+        }
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+export const updateMovie = asyncHandler(async (req, res) => {
+    try {
+        const id = req.params.id;
+        const data = req.body;
+        const movie = doc(db, "movies", id);
+        await updateDoc(movie, data);
+        res.status(200).send("movie updated successfully");
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+export const deleteMovie = asyncHandler(async (req, res) => {
+    try {
+        const id = req.params.id;
+        await deleteDoc(doc(db, "movies", id));
+        res.status(200).send("movie deleted successfully");
+    } catch (error) {
+        res.status(400).send(error.message);
     }
 });

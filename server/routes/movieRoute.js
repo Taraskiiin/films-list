@@ -2,18 +2,18 @@ import express from "express";
 
 import {
     addMovie,
-    // getMovie,
+    getMovie,
     getMovies,
-    // updateMovie,
-    // deleteMovie,
+    updateMovie,
+    deleteMovie,
 } from "../controllers/moviesController.js";
 
 const router = express.Router();
 
-router.get("/:page/:perPage", getMovies);
+router.get("/all/:page/:perPage", getMovies);
 router.post("/new", addMovie);
-// router.get("/movie/:id", getMovie);
-// router.put("/update/:id", updateMovie);
-// router.delete("/delete/:id", deleteMovie);
+router.get("/movie/:id", getMovie);
+router.put("/update/:id", updateMovie);
+router.delete("/delete/:id", deleteMovie);
 
 export default router;
